@@ -23,11 +23,26 @@
 #import <XCTest/XCTest.h>
 
 #import <PCJSONRPC.h>
+#import <PCJSONRPCSubclass.h>
 
-@protocol TestService <NSObject>
-- test;
-- test:(id)params;
-- test:(id)params error:(NSError *)error;
+@interface MyPCJSONRPC : PCJSONRPC
+
+@end
+
+@implementation MyPCJSONRPC
+
+- (NSData *)responsePayloadDataFromRequest:(NSURLRequest *)request error:(NSError **)error {
+    id payload = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:error];
+    id result = [payload[@"params"] count] ? payload[@"params"][0] : [NSNull null];
+    return [NSJSONSerialization dataWithJSONObject:@{@"result": result} options:0 error:error];
+}
+
+@end
+
+@protocol EchoService
+- (id)echo;
+- (id)echo:(id)params;
+- (id)echo:(id)params error:(NSError **)error;
 @end
 
 @interface PCJSONRPC_Test : XCTestCase
@@ -36,19 +51,31 @@
 
 @implementation PCJSONRPC_Test
 
-- (void)setUp {
-    [super setUp];
-}
-
-- (void)tearDown {
-    [super tearDown];
-}
-
 - (void)testProxy {
-    id<TestService> service = [[[PCJSONRPC alloc] initWithURL:nil] proxyForProtocol:@protocol(TestService)];
-    XCTAssert([service respondsToSelector:@selector(test)]);
-    XCTAssert([service respondsToSelector:@selector(test:)]);
-    XCTAssert([service respondsToSelector:@selector(test:error:)]);
+    
+    NSURL *url = [NSURL URLWithString:@"http://example.com/json-rpc"];
+    PCJSONRPC *jsonRPC = [[MyPCJSONRPC alloc] initWithURL:url];
+    XCTAssertNotNil(jsonRPC);
+    
+    NSError *error;
+    NSString *hello = [jsonRPC invokeMethod:@"echo"
+                             withParameters:@[@"World!"] error:&error];
+    XCTAssertNil(error);
+    XCTAssertEqualObjects(hello, @"World!");
+    
+    id<EchoService> service =
+        [jsonRPC proxyForProtocol:@protocol(EchoService)];
+    XCTAssertNotNil(service);
+    
+    hello = [service echo];
+    XCTAssertNil(hello);
+    
+    hello = [service echo:@[@"World!"]];
+    XCTAssertEqualObjects(hello, @"World!");
+    
+    hello = [service echo:@[@"World!"] error:&error];
+    XCTAssertNil(error);
+    XCTAssertEqualObjects(hello, @"World!");
 }
 
 @end

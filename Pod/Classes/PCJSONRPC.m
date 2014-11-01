@@ -99,6 +99,8 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
         return nil;
     }
     
+    if (error) *error = nil;
+    
     return result;
 }
 
@@ -109,6 +111,7 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
         if (error) *error = localError;
         return nil;
     }
+    if (error) *error = nil;
     return data;
 }
 
@@ -119,11 +122,14 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
         if (error) *error = localError;
         return nil;
     }
+    if (error) *error = nil;
     return object;
 }
 
 - (NSString *)requestIdForPartialPayload:(NSDictionary *)payload error:(NSError **)error {
-    return [[NSUUID UUID] UUIDString];
+    NSString *requestId =  [[NSUUID UUID] UUIDString];
+    if (error) *error = nil;
+    return requestId;
 }
 
 - (NSDictionary *)requestPayloadForMethod:(NSString *)method andParameters:(id)parameters error:(NSError **)error {
@@ -137,6 +143,7 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
         if (error) *error = localError;
         return nil;
     }
+    if (error) *error = nil;
     return payload;
 }
 
@@ -145,6 +152,7 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
     request.HTTPBody = payloadData;
+    if (error) *error = nil;
     return request;
 }
 
@@ -168,6 +176,7 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
     if (self.trace) {
         NSLog(@"JSONRPC RESPONSE: %@", [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:[NSJSONSerialization JSONObjectWithData:payloadData options:0 error:nil] options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding]);
     }
+    if (error) *error = nil;
     return payloadData;
 }
 
@@ -197,6 +206,7 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
         return nil;
     }
     id payloadResult = payload[@"result"];
+    if (error) *error = nil;
     return !IS_NULL(payloadResult) ? payloadResult : nil;
 }
 
@@ -246,8 +256,9 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
     if (localError) {
         if (error) *error = localError;
         return;
-    } else if (result) {
-        [invocation setReturnValue:(void *)result];
+    } else {
+        if (error) *error = nil;
+        if (result) [invocation setReturnValue:&result];
     }
 }
 
