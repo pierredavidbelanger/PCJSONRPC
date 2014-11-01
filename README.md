@@ -13,9 +13,15 @@ It's extensible because [easily subclassable](https://github.com/pierredavidbela
 
 It's synchronous because sometime we know what we want and we know what we do. And we certainly know not to invoke a remote method on the main thread, right?
 
-## Usage
+## Tests
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+To run the - far from complete - tests, clone the repo, and run `pod install` from the Example directory before opening `PCJSONRPC.xcworkspace`.
+
+Or, in one easy step, in a terminal:
+
+```bash
+$ pod try PCJSONRPC
+```
 
 ## Installation
 
