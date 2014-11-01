@@ -1,0 +1,6 @@
+language: objective-c
+podfile: Example/Podfile
+xcode_workspace: Example/PCJSONRPC.xcworkspace
+xcode_scheme: PCJSONRPC-Test-OSX
+before_install:
+  - gem install cocoapods -v '0.34.4'
