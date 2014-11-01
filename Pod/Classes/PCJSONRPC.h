@@ -24,10 +24,18 @@
 
 extern NSString * const PCJSONRPCErrorDomain;
 
-extern NSInteger const PCJSONRPCErrorCodeUnknow;
-extern NSInteger const PCJSONRPCErrorCodeNotOk;
+extern NSInteger const PCJSONRPCErrorCodeHTTPNotOk;
 
-extern NSString * const PCJSONRPCErrorDataKey;
+extern NSInteger const PCJSONRPCErrorCodeUnknow;
+extern NSInteger const PCJSONRPCErrorCodeJSONRPCServerErrorMin;
+extern NSInteger const PCJSONRPCErrorCodeJSONRPCServerErrorMax;
+extern NSInteger const PCJSONRPCErrorCodeJSONRPCInvalidRequest;
+extern NSInteger const PCJSONRPCErrorCodeJSONRPCMethodNotFound;
+extern NSInteger const PCJSONRPCErrorCodeJSONRPCInvalidParams;
+extern NSInteger const PCJSONRPCErrorCodeJSONRPCInternalError;
+extern NSInteger const PCJSONRPCErrorCodeJSONRPCParseError;
+
+extern NSString * const PCJSONRPCErrorUserInfoDataKey;
 
 /**
  `PCJSONRPC` is a client used to communicate with JSON-RPC 2.0 services.
@@ -54,6 +62,26 @@ extern NSString * const PCJSONRPCErrorDataKey;
 - (instancetype)initWithURL:(NSURL *)url;
 
 /**
+ Create a JSON-RPC proxy given a `Protocol`.
+ 
+ The proxy object intercepts all the `Protocol` methods.
+ 
+ When a message is sent to one of the `Protocol` selector:
+ 
+ It uses the first part of the `NSInvocation` selector as the JSON-RPC method name.
+ 
+ If the `NSInvocation` contains at least one parameter,
+ the first parameter is used as the JSON-RPC method parameters.
+ 
+ If the `NSInvocation` contains at least two parameters,
+ the second parameter is used as an error output (`NSError **`).
+ 
+ If the `NSInvocation` contains more than two parameters,
+ the third and the subsequents are ignored.
+ 
+ @param protocol The `Protocol` that contains the methods to be proxied.
+ 
+ @return The JSON-RPC proxy.
  */
 - (id)proxyForProtocol:(Protocol *)protocol;
 

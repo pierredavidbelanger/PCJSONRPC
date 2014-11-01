@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "PCJSONRPC"
-  s.version = "0.1.0"
+  s.version = "0.2.0"
   s.summary = "Simple yet extensible synchronous JSON-RPC client"
   s.homepage = "https://github.com/pierredavidbelanger/PCJSONRPC"
   s.license = 'MIT'

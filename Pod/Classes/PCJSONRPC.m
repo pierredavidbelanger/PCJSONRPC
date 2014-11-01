@@ -29,10 +29,18 @@
 
 NSString * const PCJSONRPCErrorDomain = @"PCJSONRPCErrorDomain";
 
-NSInteger const PCJSONRPCErrorCodeUnknow = -100;
-NSInteger const PCJSONRPCErrorCodeNotOk = -200;
+NSInteger const PCJSONRPCErrorCodeHTTPNotOk = -200;
 
-NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
+NSInteger const PCJSONRPCErrorCodeUnknow = -100;
+NSInteger const PCJSONRPCErrorCodeJSONRPCServerErrorMin = -32000;
+NSInteger const PCJSONRPCErrorCodeJSONRPCServerErrorMax = -32099;
+NSInteger const PCJSONRPCErrorCodeJSONRPCInvalidRequest = -32600;
+NSInteger const PCJSONRPCErrorCodeJSONRPCMethodNotFound = -32601;
+NSInteger const PCJSONRPCErrorCodeJSONRPCInvalidParams = -32602;
+NSInteger const PCJSONRPCErrorCodeJSONRPCInternalError = -32603;
+NSInteger const PCJSONRPCErrorCodeJSONRPCParseError = -32700;
+
+NSString * const PCJSONRPCErrorUserInfoDataKey = @"PCJSONRPCErrorUserInfoDataKey";
 
 @interface PCJSONRPCProxy : NSProxy
 
@@ -169,7 +177,7 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
     }
     if (response.statusCode != 200) {
         if (error) *error = [NSError errorWithDomain:PCJSONRPCErrorDomain
-                                                code:PCJSONRPCErrorCodeNotOk
+                                                code:PCJSONRPCErrorCodeHTTPNotOk
                                             userInfo:@{NSLocalizedDescriptionKey: [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode]}];
         return nil;
     }
@@ -187,17 +195,43 @@ NSString * const PCJSONRPCErrorDataKey = @"PCJSONRPCErrorDataKey";
         NSInteger code = PCJSONRPCErrorCodeUnknow;
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:2];
         if ([payloadError isKindOfClass:[NSDictionary class]]) {
-            if (!IS_NULL(payloadError[@"code"]))
+            if (!IS_NULL(payloadError[@"code"])) {
                 code = [payloadError[@"code"] integerValue];
-            if (!IS_NULL(payloadError[@"message"]))
+            }
+            if (!IS_NULL(payloadError[@"message"])) {
                 userInfo[NSLocalizedDescriptionKey] = [payloadError[@"message"] description];
-            else
-                userInfo[NSLocalizedDescriptionKey] = @"Unknow error";
-            if (!IS_NULL(payloadError[@"data"]))
-                userInfo[PCJSONRPCErrorDataKey] = payloadError[@"data"];
+            } else {
+                if (code >= PCJSONRPCErrorCodeJSONRPCServerErrorMin && code <= PCJSONRPCErrorCodeJSONRPCServerErrorMax) {
+                    userInfo[NSLocalizedDescriptionKey] = @"Server error";
+                } else {
+                    switch (code) {
+                        case PCJSONRPCErrorCodeJSONRPCInvalidRequest:
+                            userInfo[NSLocalizedDescriptionKey] = @"Invalid Request";
+                            break;
+                        case PCJSONRPCErrorCodeJSONRPCMethodNotFound:
+                            userInfo[NSLocalizedDescriptionKey] = @"Method not found";
+                            break;
+                        case PCJSONRPCErrorCodeJSONRPCInvalidParams:
+                            userInfo[NSLocalizedDescriptionKey] = @"Invalid params";
+                            break;
+                        case PCJSONRPCErrorCodeJSONRPCInternalError:
+                            userInfo[NSLocalizedDescriptionKey] = @"Internal error";
+                            break;
+                        case PCJSONRPCErrorCodeJSONRPCParseError:
+                            userInfo[NSLocalizedDescriptionKey] = @"Parse error";
+                            break;
+                        default:
+                            userInfo[NSLocalizedDescriptionKey] = @"Unknow error";
+                            break;
+                    }
+                }
+            }
+            if (!IS_NULL(payloadError[@"data"])) {
+                userInfo[PCJSONRPCErrorUserInfoDataKey] = payloadError[@"data"];
+            }
         } else {
             userInfo[NSLocalizedDescriptionKey] = @"Unknow error";
-            userInfo[PCJSONRPCErrorDataKey] = payloadError;
+            userInfo[PCJSONRPCErrorUserInfoDataKey] = payloadError;
         }
         localError = [NSError errorWithDomain:PCJSONRPCErrorDomain code:code userInfo:userInfo];
     }
