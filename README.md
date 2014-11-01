@@ -5,6 +5,14 @@
 [![License](https://img.shields.io/cocoapods/l/PCJSONRPC.svg?style=flat)](http://cocoadocs.org/docsets/PCJSONRPC)
 [![Platform](https://img.shields.io/cocoapods/p/PCJSONRPC.svg?style=flat)](http://cocoadocs.org/docsets/PCJSONRPC)
 
+Simple yet extensible synchronous JSON-RPC client.
+
+It's simple. Maybe so simple that it probably is not feature complete or even spec compliant. But it works for real world projects.
+
+It's extensible because [easily subclassable](https://github.com/pierredavidbelanger/PCJSONRPC/blob/master/Pod/Classes/PCJSONRPCSubclass.h). Redefine one or all of the methods used in the process.
+
+It's synchronous because sometime we know what we want and we know what we do. And we certainly know not to invoke a remote method on the main thread, right?
+
 ## Usage
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
@@ -30,7 +38,8 @@ Invoke a method
 ```objc
 NSError *error;
 NSString *hello = [jsonRPC invokeMethod:@"echo"
-                         withParameters:@[@"World!"] error:&error];
+                         withParameters:@[@"World!"]
+                                  error:&error];
 ```
 
 Define a protocol

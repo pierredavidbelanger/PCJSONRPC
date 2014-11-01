@@ -59,7 +59,8 @@
     
     NSError *error;
     NSString *hello = [jsonRPC invokeMethod:@"echo"
-                             withParameters:@[@"World!"] error:&error];
+                             withParameters:@[@"World!"]
+                                      error:&error];
     XCTAssertNil(error);
     XCTAssertEqualObjects(hello, @"World!");
     
