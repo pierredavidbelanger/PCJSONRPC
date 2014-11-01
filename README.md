@@ -26,6 +26,10 @@ it, simply add the following line to your Podfile:
 
 ## Usage
 
+```objc
+#import <PCJSONRPC.h>
+```
+
 Create a JSON-RPC client
 
 ```objc
