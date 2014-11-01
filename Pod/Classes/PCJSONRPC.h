@@ -29,15 +29,43 @@ extern NSInteger const PCJSONRPCErrorCodeNotOk;
 
 extern NSString * const PCJSONRPCErrorDataKey;
 
+/**
+ `PCJSONRPC` is a client used to communicate with JSON-RPC 2.0 services.
+ */
 @interface PCJSONRPC : NSObject
 
+/**
+ The service URL.
+ */
 @property (strong, readonly) NSURL *url;
+
+/**
+ Trace communications. Defaults to `NO`.
+ */
 @property BOOL trace;
 
+/**
+ Initializes a JSON-RPC client.
+ 
+ @param url The service URL.
+ 
+ @return An initialized `PCJSONRPC` instance.
+ */
 - (instancetype)initWithURL:(NSURL *)url;
 
+/**
+ */
 - (id)proxyForProtocol:(Protocol *)protocol;
 
+/**
+ Synchronously invoke a remote JSON-RPC method with parameters and optional error output.
+ 
+ @param method The remote method to invoke.
+ @param parameters The parameters `NSArray` (for positional parameters) or `NSDictionary` (for named parameters) or `nil`.
+ @param error If an error occurs, upon return contains an `NSError` object that describes the problem.
+ 
+ @return The JSON-RPC method result value.
+ */
 - (id)invokeMethod:(NSString *)method withParameters:(id)parameters error:(NSError **)error;
 
 @end

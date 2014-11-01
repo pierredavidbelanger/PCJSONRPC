@@ -24,18 +24,32 @@
 
 @interface PCJSONRPC ()
 
+/**
+ */
 - (NSData *)dataWithJSONObject:(id)object error:(NSError **)error;
 
+/**
+ */
 - (id)JSONObjectWithData:(NSData *)data error:(NSError **)error;
 
+/**
+ */
 - (NSString *)requestIdForPartialPayload:(NSDictionary *)payload error:(NSError **)error;
 
+/**
+ */
 - (NSDictionary *)requestPayloadForMethod:(NSString *)method andParameters:(id)parameters error:(NSError **)error;
 
+/**
+ */
 - (NSURLRequest *)requestWithURL:(NSURL *)url andPayloadData:(NSData *)payloadData error:(NSError **)error;
 
+/**
+ */
 - (NSData *)responsePayloadDataFromRequest:(NSURLRequest *)request error:(NSError **)error;
 
+/**
+ */
 - (id)resultFromResponsePayload:(NSDictionary *)payload error:(NSError **)error;
 
 @end
